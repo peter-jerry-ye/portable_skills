@@ -96,6 +96,7 @@ From the repository root, verify it with:
 
 ```sh
 shasum -a 256 -c pure-wasm-csv-skills/assets/s4s-csv.wasm.sha256
+wasm-tools validate pure-wasm-csv-skills/assets/s4s-csv.wasm
 ```
 
 ## Workbook Boundary

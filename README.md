@@ -58,6 +58,12 @@ Verify the bundled artifact with:
 shasum -a 256 -c pure-wasm-csv-skills/assets/s4s-csv.wasm.sha256
 ```
 
+If `wasm-tools` is installed, structural validation should also pass:
+
+```sh
+wasm-tools validate pure-wasm-csv-skills/assets/s4s-csv.wasm
+```
+
 Future versions may also publish the Wasm as a GitHub Release asset, but the
 bundled artifact keeps this skill usable in restricted environments.
 

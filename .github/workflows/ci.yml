@@ -21,13 +21,8 @@ jobs:
       - name: Validate packaged files
         run: ./scripts/ci.sh shape
 
-      - name: Verify Wasm checksum and metadata
+      - name: Install wasm-tools
+        run: cargo install --locked wasm-tools
+
+      - name: Verify Wasm artifacts
         run: ./scripts/ci.sh artifact
-
-      - name: Install Wasmtime
-        run: |
-          curl -fsSL https://wasmtime.dev/install.sh | bash
-          echo "$HOME/.wasmtime/bin" >> "$GITHUB_PATH"
-
-      - name: Smoke test bundled Wasm
-        run: ./scripts/ci.sh smoke

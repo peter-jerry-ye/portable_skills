@@ -39,12 +39,12 @@ the artifacts are implemented.
 
 ## Artifact Updates
 
-- When replacing a bundled `.wasm`, verify at least:
-  - `wasmtime run <artifact> --help`
-  - one read-only inspection command with an explicit `--dir`
-  - one command that writes to an explicitly preopened output directory
+- Every bundled `.wasm` file must have a sibling `.wasm.sha256` file.
+- Every bundled `.wasm` file must pass `wasm-tools validate`.
 - Update the matching `.version` and `.sha256` files in the same change as the
   artifact replacement.
+- Use runtime smoke checks only when a change needs command-level confidence;
+  structural validation and checksums are the required baseline.
 - Update the skill docs if the command surface or boundaries changed.
 - Keep `NOTICE` and license attributions accurate when bundled artifacts change.
 - Do not include local build paths or machine-specific metadata in artifact

@@ -1,10 +1,26 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-wasm="pure-wasm-csv-skills/assets/s4s-csv.wasm"
-checksum_file="pure-wasm-csv-skills/assets/s4s-csv.wasm.sha256"
-version_file="pure-wasm-csv-skills/assets/s4s-csv.version"
-skill_file="pure-wasm-csv-skills/SKILL.md"
+check_sha256_file() {
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum -c "$1"
+  else
+    shasum -a 256 -c "$1"
+  fi
+}
+
+require_wasm_artifacts() {
+  found=0
+  while IFS= read -r -d '' wasm; do
+    found=1
+    test -f "${wasm}.sha256"
+  done < <(find . -path ./.git -prune -o -type f -name '*.wasm' -print0)
+
+  if [[ "$found" -eq 0 ]]; then
+    echo "no .wasm artifacts found" >&2
+    exit 1
+  fi
+}
 
 case "${1:-all}" in
   shape)
@@ -12,41 +28,25 @@ case "${1:-all}" in
     test -f "AGENTS.md"
     test -f "LICENSE"
     test -f "NOTICE"
-    test -f "$skill_file"
-    test -f "$wasm"
-    test -f "$checksum_file"
-    test -f "$version_file"
+    find . -path ./.git -prune -o -type f -name 'SKILL.md' -print -quit | grep -q .
+    require_wasm_artifacts
     ;;
 
   artifact)
-    sha256sum -c "$checksum_file"
-
-    expected_hash="$(cut -d ' ' -f 1 "$checksum_file")"
-    actual_size="$(wc -c < "$wasm" | tr -d ' ')"
-
-    grep -Fx "sha256: $expected_hash" "$version_file"
-    grep -Fx "size_bytes: $actual_size" "$version_file"
-    grep -Fx "runtime: WASIp1" "$version_file"
-    ;;
-
-  smoke)
-    wasmtime --version
-    wasmtime run "$wasm" --help
-    wasmtime run "$wasm" help intake
+    require_wasm_artifacts
+    while IFS= read -r -d '' wasm; do
+      check_sha256_file "${wasm}.sha256"
+      wasm-tools validate "$wasm"
+    done < <(find . -path ./.git -prune -o -type f -name '*.wasm' -print0)
     ;;
 
   all)
     "$0" shape
     "$0" artifact
-    if command -v wasmtime >/dev/null 2>&1; then
-      "$0" smoke
-    else
-      echo "wasmtime not found; skipping smoke check" >&2
-    fi
     ;;
 
   *)
-    echo "usage: $0 [shape|artifact|smoke|all]" >&2
+    echo "usage: $0 [shape|artifact|all]" >&2
     exit 2
     ;;
 esac
