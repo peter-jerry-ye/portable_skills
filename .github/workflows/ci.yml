@@ -26,3 +26,11 @@ jobs:
 
       - name: Verify Wasm artifacts
         run: ./scripts/ci.sh artifact
+
+      - name: Install wasmtime
+        run: |
+          curl -sSf https://wasmtime.dev/install.sh | bash
+          echo "$HOME/.wasmtime/bin" >> "$GITHUB_PATH"
+
+      - name: Run packaged tool e2e scenario
+        run: ./scripts/ci.sh e2e
