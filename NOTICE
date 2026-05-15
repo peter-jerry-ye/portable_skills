@@ -1,0 +1,36 @@
+peter-jerry-ye/s4s_csv
+Copyright 2026
+
+This project is licensed under the Apache License, Version 2.0.
+
+Portions of the pure WASIp1 CSV visualization behavior are based on the
+AI Labs CSV Data Visualizer skill from:
+
+  https://github.com/ailabs-393/ai-labs-claude-skills
+
+The upstream AI Labs repository is licensed under the MIT License. The reference
+submodule is pinned at commit 1a12bc7aadcc7b211f77a7455db454b77a71f827.
+
+CSV/TSV cleaning and spreadsheet-friendly workflow ideas are inspired by the
+OpenAI Spreadsheet skill:
+
+  https://skills.sh/openai/skills/spreadsheet
+
+The OpenAI Spreadsheet skill is licensed under the Apache License, Version 2.0.
+
+This repository uses moonbit-community/miniio from the mini-wasi repository as
+a local workspace submodule for portable WASIp1 file and stdio APIs. miniio is
+licensed under the Apache License, Version 2.0.
+
+This repository uses hustcer/fzip for pure MoonBit ZIP/DEFLATE handling in the
+read-only XLSX export path:
+
+  https://github.com/hustcer/fzip
+
+hustcer/fzip is licensed under the Apache License, Version 2.0.
+
+The open-data demo includes the Palmer Penguins CSV dataset from:
+
+  https://github.com/allisonhorst/palmerpenguins
+
+The upstream Palmer Penguins project is licensed under CC0 1.0 Universal.
