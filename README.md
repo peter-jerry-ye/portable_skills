@@ -44,6 +44,23 @@ wasmtime run "$wasm" --help
 wasmtime run "$wasm" help intake
 ```
 
+## Artifact Provenance
+
+The bundled Wasm is included so the skill works immediately after checkout.
+Version and checksum metadata live beside the artifact:
+
+- `pure-wasm-csv-skills/assets/s4s-csv.version`
+- `pure-wasm-csv-skills/assets/s4s-csv.wasm.sha256`
+
+Verify the bundled artifact with:
+
+```sh
+shasum -a 256 -c pure-wasm-csv-skills/assets/s4s-csv.wasm.sha256
+```
+
+Future versions may also publish the Wasm as a GitHub Release asset, but the
+bundled artifact keeps this skill usable in restricted environments.
+
 ## Example
 
 Inspect a file without granting access to the rest of your filesystem:

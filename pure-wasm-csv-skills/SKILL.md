@@ -86,6 +86,18 @@ wasmtime run "$wasm" help groupby
 wasmtime run "$wasm" crosstab --help
 ```
 
+## Artifact Provenance
+
+The bundled artifact is `assets/s4s-csv.wasm`. Check
+`assets/s4s-csv.version` for source version metadata and
+`assets/s4s-csv.wasm.sha256` for the expected checksum.
+
+From the repository root, verify it with:
+
+```sh
+shasum -a 256 -c pure-wasm-csv-skills/assets/s4s-csv.wasm.sha256
+```
+
 ## Workbook Boundary
 
 `xlsx`/`ods` support is read-only cached-value intake/export. The tool does not

@@ -1,0 +1,7 @@
+artifact: s4s-csv.wasm
+source: https://github.com/peter-jerry-ye/skills_csv
+source_commit: 2ec86203976a34580c0cb717f16c08243ce438e2
+size_bytes: 394643
+sha256: 2596b715ec2ae1397567e8b61e1cc8e7c5fc5325d99629d4ee1123f0c0662e12
+runtime: WASIp1
+distribution: bundled in this skill repo for immediate use; future versions may also be published as GitHub Release assets

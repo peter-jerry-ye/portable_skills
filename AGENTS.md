@@ -43,8 +43,12 @@ the artifacts are implemented.
   - `wasmtime run <artifact> --help`
   - one read-only inspection command with an explicit `--dir`
   - one command that writes to an explicitly preopened output directory
+- Update the matching `.version` and `.sha256` files in the same change as the
+  artifact replacement.
 - Update the skill docs if the command surface or boundaries changed.
 - Keep `NOTICE` and license attributions accurate when bundled artifacts change.
+- Do not include local build paths or machine-specific metadata in artifact
+  provenance files.
 
 ## Git Discipline
 
