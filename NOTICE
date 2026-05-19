@@ -1,36 +1,47 @@
-peter-jerry-ye/s4s_csv
+Portable Skills
 Copyright 2026
 
 This project is licensed under the Apache License, Version 2.0.
 
-Portions of the pure WASIp1 CSV visualization behavior are based on the
-AI Labs CSV Data Visualizer skill from:
+The bundled artifacts are distributed as black-box portable skill tools. Public
+skill documentation describes the supported command surface and safety
+boundaries, not implementation internals.
 
-  https://github.com/ailabs-393/ai-labs-claude-skills
+CSV skill attributions:
 
-The upstream AI Labs repository is licensed under the MIT License. The reference
-submodule is pinned at commit 1a12bc7aadcc7b211f77a7455db454b77a71f827.
+- Portions of CSV visualization behavior are based on the AI Labs CSV Data
+  Visualizer skill from https://github.com/ailabs-393/ai-labs-claude-skills,
+  licensed under the MIT License.
+- CSV/TSV cleaning and spreadsheet-friendly workflow ideas are inspired by the
+  OpenAI Spreadsheet skill at https://skills.sh/openai/skills/spreadsheet,
+  licensed under the Apache License, Version 2.0.
+- ZIP/DEFLATE handling used for read-only workbook intake uses hustcer/fzip
+  from https://github.com/hustcer/fzip, licensed under the Apache License,
+  Version 2.0.
+- The open-data demo material uses the Palmer Penguins dataset from
+  https://github.com/allisonhorst/palmerpenguins, licensed under CC0 1.0
+  Universal.
 
-CSV/TSV cleaning and spreadsheet-friendly workflow ideas are inspired by the
-OpenAI Spreadsheet skill:
+PII skill attributions:
 
-  https://skills.sh/openai/skills/spreadsheet
+- Selected PII behavior and fixtures are derived from Microsoft Presidio,
+  Copyright (c) Microsoft Corporation, licensed under the MIT License:
+  https://github.com/microsoft/presidio
+- Selected phone-number behavior and fixture material are derived from Google
+  libphonenumber, Copyright (C) The Libphonenumber Authors, licensed under the
+  Apache License, Version 2.0: https://github.com/google/libphonenumber
+- Optional model-backed PII review can use local Hugging Face-style model
+  bundles whose model cards report MIT licensing, including
+  StanfordAIMI/stanford-deidentifier-base and onnx-community/bert-base-NER-ONNX.
+- ONNX schema material is from the ONNX project, licensed under the Apache
+  License, Version 2.0: https://github.com/onnx/onnx
+- MoonBit protobuf tooling is from moonbitlang/protoc-gen-mbt, Copyright
+  2024-2025 International Digital Economy Academy, licensed under the Apache
+  License, Version 2.0 with LLVM exception where noted:
+  https://github.com/moonbitlang/protoc-gen-mbt
 
-The OpenAI Spreadsheet skill is licensed under the Apache License, Version 2.0.
+Portable runtime attributions:
 
-This repository uses moonbit-community/miniio from the mini-wasi repository as
-a local workspace submodule for portable WASIp1 file and stdio APIs. miniio is
-licensed under the Apache License, Version 2.0.
-
-This repository uses hustcer/fzip for pure MoonBit ZIP/DEFLATE handling in the
-read-only XLSX export path:
-
-  https://github.com/hustcer/fzip
-
-hustcer/fzip is licensed under the Apache License, Version 2.0.
-
-The open-data demo includes the Palmer Penguins CSV dataset from:
-
-  https://github.com/allisonhorst/palmerpenguins
-
-The upstream Palmer Penguins project is licensed under CC0 1.0 Universal.
+- WASIp1 file and stdio support uses moonbit-community/miniio from the
+  mini-wasi project, licensed under the Apache License, Version 2.0:
+  https://github.com/moonbit-community/mini-wasi
