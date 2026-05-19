@@ -1,0 +1,9 @@
+artifact: pii.wasm
+tool: portable-pii
+tool_version: 0.1.0
+runtime: WASIp1
+build_profile: release
+debug_symbols: stripped
+size_bytes: 547970
+sha256: 8aa59ef1c528021ed7ccd1fb1d3a51611b06e3a10c91e6c997e17bbf767cc8a2
+interface: run with no arguments, capabilities --format=json, or --model-dir for model-backed analyze/anonymize/check/sanitize reports
