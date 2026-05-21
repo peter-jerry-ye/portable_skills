@@ -1,0 +1,7 @@
+interface:
+  display_name: "Portable PII Wasm"
+  short_description: "Offline PII, diff, and redaction gate"
+  default_prompt: "Use $portable-pii-wasm to check these files or diffs for supported PII and create safe review output."
+
+policy:
+  allow_implicit_invocation: true

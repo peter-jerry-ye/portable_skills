@@ -4,6 +4,6 @@ tool_version: 0.1.0
 runtime: WASIp1
 build_profile: release
 debug_symbols: stripped
-size_bytes: 430578
-sha256: f36799d0bbb81e70435a9591a8bfa6f470bb48c93bf12e65f027c39f559e1e63
-interface: run with --help or help <command>
+size_bytes: 475590
+sha256: af31b4cba45834888032a7af47f6106b1581cd55cf6fcead239d1b8748ddb936
+interface: run with --help, help <command>, workbook triage, workbook export --recommended, --table, or --region
