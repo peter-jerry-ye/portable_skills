@@ -26,6 +26,19 @@ wasmtime run --dir ./data::data --dir ./output::output \
 Every path passed to the module is a guest path under an explicit runtime
 preopen. There is no ambient filesystem access.
 
+## Runtime Fallback
+
+Use runtimes in this order:
+
+1. `wasmtime`: `--dir ./data::data`
+2. `wasmedge`: `--dir data:./data`
+3. `iwasm`: `--map-dir=data::./data`, only after `selftest` or
+   `capabilities` succeeds
+
+If none are available, stop and report that a compatible WASIp1 runtime is
+required. Do not substitute Python PII libraries, containers, network PII
+services, shell parsing, or non-sandboxed file handling.
+
 ## Workflow Routing
 
 - Pre-share check: run `check` with `--report=safe`; summarize entity types,
@@ -60,6 +73,10 @@ logs, or handoffs. Safe summaries can include entity type, count, path, span
 or line-local span, score, replacement placeholder, skipped files, output
 paths, custom/model sections, and scope limits. They must not echo raw matched
 PII.
+
+Final summaries should include the gate outcome, entity counts, affected paths
+or diff scope, report paths, skipped-file or model scope, and caveats. Do not
+offer extra redaction or cleanup unless the user asked for it.
 
 ## References
 

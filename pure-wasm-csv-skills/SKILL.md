@@ -23,9 +23,24 @@ wasmtime run --dir ./data::data --dir ./output::output \
 Every path passed to the module is a guest path under an explicit runtime
 preopen. There is no ambient filesystem access.
 
+## Runtime Fallback
+
+Use runtimes in this order:
+
+1. `wasmtime`: `--dir ./data::data`
+2. `wasmedge`: `--dir data:./data`
+3. `iwasm`: `--map-dir=data::./data`, only after `iwasm ... "$wasm" --help`
+   succeeds
+
+If none are available, stop and report that a compatible WASIp1 runtime is
+required. Do not substitute Python, pandas, LibreOffice, spreadsheet apps,
+shell CSV pipelines, containers, or non-sandboxed parsing.
+
 ## Workflow Routing
 
-- Unknown table: run `preview`, `file-info` or `overview`, then `profile`.
+- Unknown table: run `profile` first. It includes shape, columns, missingness,
+  duplicate count, summaries, and quality signals. Add `preview`, `file-info`,
+  `columns`, or `missing` only when separate review artifacts are useful.
 - Column question: run `columns`, `missing`, `numeric`, or `categorical`.
 - Relationship question: run `correlation`, `crosstab`, or `groupby`.
 - Cleaning review: run `clean` with `--report`, then run `quality` or
@@ -57,6 +72,9 @@ wasmtime run "$wasm" help workbook
   review artifacts.
 - Treat cleaned files, reports, charts, dashboards, and bundles as derivative
   review artifacts.
+- Final summaries should include artifact paths, key counts or selector
+  choices, scope limits, and caveats. Do not offer a follow-up cleanup unless
+  the user asked for it.
 - Do not substitute Python, pandas, Plotly, LibreOffice, spreadsheet apps,
   shell CSV pipelines, or native renderers for supported first-pass work.
 

@@ -57,14 +57,22 @@ iwasm --map-dir=data::./data --map-dir=output::./output \
 
 ## First Look
 
-Use this for an unfamiliar table. Prefer small, inspectable outputs first:
+Use this for an unfamiliar table. Start with `profile`; it is the fastest
+single-command review path and includes file shape, columns, missingness,
+duplicate count, summaries, and data-quality signals:
+
+```sh
+wasmtime run --dir ./data::data --dir ./output::output "$wasm" profile data/input.csv -f json -o output/profile.json
+```
+
+Add separate artifacts when a human or another tool needs small files for
+inspection:
 
 ```sh
 wasmtime run --dir ./data::data --dir ./output::output "$wasm" preview data/input.csv -n 10 --columns 8 -f csv -o output/preview.csv
 wasmtime run --dir ./data::data --dir ./output::output "$wasm" file-info data/input.csv -f json -o output/file-info.json
 wasmtime run --dir ./data::data --dir ./output::output "$wasm" columns data/input.csv -f csv -o output/columns.csv
 wasmtime run --dir ./data::data --dir ./output::output "$wasm" missing data/input.csv -f csv -o output/missing.csv
-wasmtime run --dir ./data::data --dir ./output::output "$wasm" profile data/input.csv -f json -o output/profile.json
 ```
 
 Read `file-info.json` for file size and shape, `columns.csv` for inferred
