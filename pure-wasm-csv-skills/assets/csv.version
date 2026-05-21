@@ -1,5 +1,5 @@
 artifact: csv.wasm
-tool: s4s-csv
+tool: csv
 tool_version: 0.1.0
 runtime: WASIp1
 build_profile: release
