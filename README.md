@@ -1,5 +1,7 @@
 # Portable Skills
 
+[![skills.sh](https://skills.sh/b/peter-jerry-ye/portable_skills)](https://skills.sh/peter-jerry-ye/portable_skills)
+
 Portable Skills packages small, sandboxed Wasm tools for safe first-pass work
 with local files.
 
@@ -8,6 +10,16 @@ inspect it in a constrained environment first. A skill can read only the
 directories you explicitly allow, write only to the output locations you
 provide, and produce derivative reports you can review before moving the data
 into larger tools or workflows.
+
+## Install With `skills`
+
+The Vercel `skills` CLI can discover both skills directly from this repository:
+
+```sh
+npx skills add peter-jerry-ye/portable_skills --list
+npx skills add peter-jerry-ye/portable_skills --skill pure-wasm-csv-skills
+npx skills add peter-jerry-ye/portable_skills --skill portable-pii-wasm
+```
 
 ## Included Skills
 
