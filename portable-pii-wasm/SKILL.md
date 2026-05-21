@@ -1,80 +1,63 @@
 ---
 name: portable-pii-wasm
-description: Detect, review, anonymize, and sanitize supported PII in local text files or directory trees with a portable offline workflow. Use when checking files before sharing, creating safe reports, redacting logs/tickets/configs/JSON/CSV/Markdown, scanning directories for supported personal data or secrets, or applying repeatable PII policies without a Python PII runtime.
+description: Detect, review, anonymize, and sanitize supported PII in local text files and directory trees with a portable offline WASIp1 workflow. Use when checking files before sharing, creating safe reports, redacting logs/tickets/configs/JSON/CSV/Markdown/text, scanning directories for supported personal data or secrets, applying repeatable PII policies, or using local model-backed span candidates without a Python PII runtime.
 ---
 
 # Portable PII Wasm
 
 Use this skill to find or redact supported personal information before sharing
-text, logs, tickets, configs, JSON, CSV, Markdown, or local file trees. Treat
-the packaged Wasm as a black-box worker: grant only the directories needed and
-write redacted outputs separately from inputs.
+text artifacts or local file trees. Treat `pii.wasm` as a black-box worker:
+grant only the directories needed and write redacted outputs separately from
+inputs.
 
 ## Quick Start
 
-Resolve the bundled artifact relative to this skill directory and run it with
-explicit WASI preopens. Any WASIp1-capable runtime is sufficient; examples use
-`wasmtime` because its `--dir host::guest` syntax is explicit:
+Resolve the bundled artifact relative to this skill directory. Examples assume
+`data/` contains inputs and `output/` is for generated reports or redacted
+copies:
 
 ```sh
-wasm=/absolute/path/to/portable-pii-wasm/assets/pii.wasm
-wasmtime run --dir ./data::data --dir ./output::output "$wasm" check data/ticket.txt --preset=customer_support --format=json --report=safe
+wasm=portable-pii-wasm/assets/pii.wasm
+wasmtime run --dir ./data::data --dir ./output::output \
+  "$wasm" check data/ticket.txt --preset=customer_support \
+  --format=json --report=safe
 ```
 
-For directory redaction, keep the redacted copy and manifest outside the input
-mount:
+Every path passed to the module is a guest path under an explicit runtime
+preopen. There is no ambient filesystem access.
 
-```sh
-wasmtime run --dir ./data::data --dir ./output::output "$wasm" sanitize data --output=output/redacted --preset=error_report --manifest=output/manifest.json
-```
-
-Every path passed to the Wasm module is a guest path under the runtime's
-preopen mapping. There is no ambient filesystem access.
-
-## Workflows
+## Workflow Routing
 
 - Pre-share check: run `check` with `--report=safe`; summarize entity types,
-  counts, and affected path, not raw matched text.
-- Directory review: run `scan`, include a manifest, and report skipped files or
-  bounds that make the result incomplete.
-- Redaction: run `anonymize` for one text artifact or `sanitize` for a file
-  tree; keep outputs outside the input directory.
-- Repeatable policy: use `--policy` for preset/entity selection, score
-  threshold, report mode, replacement text, hidden-file rules, excludes, and
-  maximum file size.
-- Model-backed review/redaction: use `--model-dir=model` with `analyze`,
-  `anonymize`, `check`, or `sanitize` when the user supplies a local
-  token-classification model bundle. Keep model spans separate from
-  deterministic PII findings in summaries.
+  counts, affected paths, and limitations, not raw matched text.
+- Single-file review: run `analyze`; use `--report=full` only for explicit
+  local debugging.
+- Single-file redaction: run `anonymize` and keep the report with the redacted
+  output.
+- Directory review: run `scan` with a manifest; report skipped files and scan
+  bounds.
+- Directory redaction: run `sanitize` into an output path outside the input
+  tree.
+- Repeatable policy: use `--policy` for presets, entities, score thresholds,
+  report mode, replacement text, excludes, hidden-file handling, and size
+  limits.
+- Model-backed candidates: use `--model-dir=model` only when the user provides
+  a local model bundle; keep model spans separate from deterministic findings.
 - Capability check: run `capabilities --format=json` before relying on exact
   entity labels.
 
-Presets cover common workflows:
-
-- `customer_support`: support tickets and chat transcripts.
-- `error_report`: logs, traces, crash reports, and diagnostic payloads.
-- `financial_document`: invoices, payment instructions, and billing text.
-- `healthcare_admin`: administrative identifiers, not clinical concepts.
-- `identity_verification`: KYC/onboarding identifiers.
-
 ## Safe Reporting
 
-Use `--report=safe` for anything that may be pasted into chat, issues, PRs, CI
-logs, or vendor handoffs. Safe summaries should include entity type, count,
-path, span, score, replacement placeholder, skipped files, and output paths, but
-not raw matched PII.
-
-Use `--report=full` only for local debugging when the user explicitly needs raw
-matches. Do a manual safe-share review before posting any output externally.
-
-If runtime path mapping is confusing, put input files under `./data`, generated
-files under `./output`, and model files under `./model`, then preopen them as
-`data`, `output`, and `model`.
+Use `--report=safe` for anything that may be pasted into chat, issues, PRs,
+logs, or handoffs. Safe summaries can include entity type, count, path, span,
+score, replacement placeholder, skipped files, output paths, and scope limits.
+They must not echo raw matched PII.
 
 ## References
 
-- [Usage reference](references/usage.md): command examples, policy files,
-  model-backed workflow setup, directory scanning, and troubleshooting.
+- [Usage reference](references/usage.md): task recipes, policy files, runtime
+  fallbacks, model-backed workflow setup, directory scanning, and
+  troubleshooting.
 
 ## Boundaries
 
@@ -84,6 +67,5 @@ diagnoses, clinical concepts, arbitrary secrets, PDF/DOCX parsing, and network
 service access are outside scope unless `capabilities` says otherwise.
 
 Model-backed spans are experimental review candidates and are reported
-separately from deterministic PII findings.
-
-Redaction is text-level and does not preserve structured document formats.
+separately from deterministic findings. Redaction is text-level and does not
+preserve structured document formats.

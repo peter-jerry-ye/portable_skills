@@ -11,6 +11,10 @@ into larger tools or workflows.
 
 ## Included Skills
 
+Each skill can be installed and used independently. Start with the skill that
+matches the file-handling task; do not combine them unless the user explicitly
+needs both tabular-data review and PII review.
+
 ### `pure-wasm-csv-skills`
 
 Inspect, clean, validate, summarize, and visualize tabular data.
@@ -22,6 +26,13 @@ Use it for:
 - generating profile, audit, intake, schema, and quality reports;
 - exporting supported cached-value workbook sheets to CSV;
 - producing reviewable HTML chart and dashboard artifacts.
+
+Start here when the user's file is a table or workbook-like artifact:
+
+```sh
+wasm=pure-wasm-csv-skills/assets/csv.wasm
+wasmtime run --dir ./data::data --dir ./output::output "$wasm" profile data/input.csv -f json -o output/profile.json
+```
 
 ### `portable-pii-wasm`
 
@@ -37,6 +48,13 @@ Use it for:
 - optionally adding model-backed span candidates through the same `pii.wasm`
   entry point when the user supplies a local model bundle.
 
+Start here when the user's task is safe-share review or redaction:
+
+```sh
+wasm=portable-pii-wasm/assets/pii.wasm
+wasmtime run --dir ./data::data --dir ./output::output "$wasm" check data/ticket.txt --preset=customer_support --format=json --report=safe
+```
+
 ## Safety Model
 
 Portable Skills are designed around explicit access:
@@ -47,26 +65,32 @@ Portable Skills are designed around explicit access:
 - treat generated reports, cleaned files, charts, dashboards, manifests, and
   redacted copies as derivative review artifacts.
 
-The examples use `wasmtime` because it is common and its `--dir host::guest`
-syntax makes preopens explicit. Any runtime with WASIp1 support is sufficient
-if it can provide the same directory access.
+The examples use `wasmtime` because its `--dir host::guest` syntax makes
+preopens explicit. If `wasmtime` is unavailable, the skill references include
+tested fallback patterns for WasmEdge and conditional WAMR/iwasm use.
 
-Example:
+CSV example:
 
 ```sh
 wasm=pure-wasm-csv-skills/assets/csv.wasm
 wasmtime run --dir ./data::data --dir ./output::output "$wasm" profile data/input.csv -f json -o output/profile.json
 ```
 
+PII example:
+
 ```sh
 wasm=portable-pii-wasm/assets/pii.wasm
-wasmtime run --dir ./data::data --dir ./output::output "$wasm" scan data --preset=error_report --manifest=output/pii-report.json
+wasmtime run --dir ./data::data --dir ./output::output "$wasm" scan data --preset=error_report --manifest=output/pii-report.json --format=json --report=safe
 ```
 
 If runtime path mapping is confusing, create `data` and `output` under the
 current directory. For PII model-backed workflows, also create `model`. Then
 map them as `./data::data`, `./output::output`, and, when needed,
 `./model::model`.
+
+Do not silently replace these workflows with Python, LibreOffice, shell CSV
+pipelines, containers, network PII services, or non-sandboxed parsing when a
+runtime is missing. Install or select a compatible WASIp1 runtime first.
 
 ## Artifact Checks
 

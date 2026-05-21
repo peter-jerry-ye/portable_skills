@@ -1,0 +1,7 @@
+interface:
+  display_name: "Pure Wasm CSV"
+  short_description: "Sandboxed CSV and workbook intake"
+  default_prompt: "Use $pure-wasm-csv-skills to inspect this tabular file and produce safe first-pass review artifacts."
+
+policy:
+  allow_implicit_invocation: true
