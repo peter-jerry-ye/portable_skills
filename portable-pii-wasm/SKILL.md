@@ -1,6 +1,6 @@
 ---
 name: portable-pii-wasm
-description: Detect, review, anonymize, and sanitize supported PII in local text files and directory trees with a portable offline WASIp1 workflow. Use when checking files before sharing, creating safe reports, redacting logs/tickets/configs/JSON/CSV/Markdown/text, scanning directories for supported personal data or secrets, applying repeatable PII policies, or using local model-backed span candidates without a Python PII runtime.
+description: Detect, review, anonymize, and sanitize supported PII in local text files, directory trees, and unified diffs with a portable offline WASIp1 workflow. Use when checking files before sharing, creating safe reports, redacting logs/tickets/configs/JSON/CSV/Markdown/text, scanning directories or staged diffs for supported personal data or narrow secret formats, applying repeatable policies or rule packs, or using local model-backed span candidates without a Python PII runtime.
 ---
 
 # Portable PII Wasm
@@ -36,22 +36,30 @@ preopen. There is no ambient filesystem access.
   output.
 - Directory review: run `scan` with a manifest; report skipped files and scan
   bounds.
+- Diff review: run `scan --diff` on a unified diff file or stdin; report that
+  only added lines were scanned.
 - Directory redaction: run `sanitize` into an output path outside the input
   tree.
-- Repeatable policy: use `--policy` for presets, entities, score thresholds,
-  report mode, replacement text, excludes, hidden-file handling, and size
-  limits.
+- Repeatable policy: use `policy-template` to create a starter policy, then
+  reuse `--policy` for presets, entities, score thresholds, report mode,
+  replacement text, excludes, hidden-file handling, size limits, and rule packs.
+- Custom workflow rules: use `--rule-pack` only for user-supplied regex rules,
+  denylists, and allowlists; summarize them as custom matches, not public PII
+  entities.
 - Model-backed candidates: use `--model-dir=model` only when the user provides
   a local model bundle; keep model spans separate from deterministic findings.
 - Capability check: run `capabilities --format=json` before relying on exact
   entity labels.
+- Demo commands: do not use `ner-demo` or `presidio-transformers-demo` for
+  normal safe-share work.
 
 ## Safe Reporting
 
 Use `--report=safe` for anything that may be pasted into chat, issues, PRs,
-logs, or handoffs. Safe summaries can include entity type, count, path, span,
-score, replacement placeholder, skipped files, output paths, and scope limits.
-They must not echo raw matched PII.
+logs, or handoffs. Safe summaries can include entity type, count, path, span
+or line-local span, score, replacement placeholder, skipped files, output
+paths, custom/model sections, and scope limits. They must not echo raw matched
+PII.
 
 ## References
 
@@ -63,8 +71,9 @@ They must not echo raw matched PII.
 
 This is supported-PII detection, not a guarantee that all personal information
 has been removed. Names, organizations, full addresses, general locations,
-diagnoses, clinical concepts, arbitrary secrets, PDF/DOCX parsing, and network
-service access are outside scope unless `capabilities` says otherwise.
+diagnoses, clinical concepts, arbitrary secrets, generic environment-variable
+heuristics, PDF/DOCX parsing, and network service access are outside scope
+unless `capabilities` says otherwise.
 
 Model-backed spans are experimental review candidates and are reported
 separately from deterministic findings. Redaction is text-level and does not

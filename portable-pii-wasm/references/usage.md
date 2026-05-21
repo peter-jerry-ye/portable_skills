@@ -7,6 +7,7 @@ flags, entity labels, presets, and experimental features:
 wasm=portable-pii-wasm/assets/pii.wasm
 wasmtime run "$wasm"
 wasmtime run "$wasm" capabilities --format=json
+wasmtime run "$wasm" policy-template customer_support --format=json
 ```
 
 ## Runtime Pattern
@@ -71,10 +72,16 @@ report the runtime incompatibility.
 - `anonymize`: emit redacted text and findings for one input file.
 - `scan`: scan one file or a directory tree and optionally write a safe
   manifest.
+- `scan --diff`: scan added lines from a unified diff file or stdin and
+  optionally write a safe manifest.
 - `sanitize`: write a redacted directory or file copy and optionally write a
   safe manifest.
 - `capabilities`: list supported entity labels and presets.
+- `policy-template`: emit a starter policy for a preset.
 - `selftest`: run an in-runtime smoke check.
+
+`ner-demo` and `presidio-transformers-demo` are demo/diagnostic commands, not
+normal safe-share workflows.
 
 ## Pre-Share Single-File Check
 
@@ -122,6 +129,29 @@ wasmtime run --dir ./data::data --dir ./output::output \
 `--max-bytes=N`. Files skipped by size or type are not clean; include skipped
 files or configured bounds in the final response.
 
+## Staged Diff Gate
+
+Use `scan --diff` for a pre-commit or review gate over added lines in a unified
+diff. It does not scan deleted lines, context lines, or the full file contents
+behind the diff.
+
+```sh
+wasmtime run --dir ./data::data --dir ./output::output \
+  "$wasm" scan data/staged.diff --diff --preset=error_report \
+  --manifest=output/staged-pii.json --format=json --report=safe
+```
+
+To scan a diff from stdin, only the manifest directory needs a preopen:
+
+```sh
+git diff --cached | wasmtime run --dir ./output::output \
+  "$wasm" scan --diff --preset=error_report \
+  --manifest=output/staged-pii.json --format=json --report=safe
+```
+
+`scan --diff` returns nonzero when supported PII or custom rule-pack matches
+are found. Treat that as a gate result, not as a runtime failure.
+
 ## Redacted Directory Copy
 
 ```sh
@@ -148,10 +178,21 @@ Use presets when the workflow is clear:
 - `healthcare_admin`: administrative identifiers, not clinical concepts.
 - `identity_verification`: onboarding and identity checks.
 
-Use `--entities=email,phone,ip` only when the user needs a narrow check. Run
+Common supported scope includes contact, payment, network, national-ID,
+health-admin identifier, date/postcode/crypto, selected phone formats, China
+administrative-region dictionary matches, private key blocks, HTTP
+authorization credentials, JWTs, selected database URLs, and narrow provider
+token formats such as GitHub, Slack, Stripe, and Google API key forms. Use
+`--entities=email,phone,ip` only when the user needs a narrow check. Run
 `capabilities --format=json` before relying on exact entity names.
 
 ## Policy Reuse
+
+Generate a starter policy from the artifact, then edit it for the project:
+
+```sh
+wasmtime run "$wasm" policy-template customer_support --format=json > output/pii-policy.json
+```
 
 Policy files make repeatable settings explicit. CLI flags override policy
 values.
@@ -166,8 +207,9 @@ values.
   "context_prefix": 6,
   "context_suffix": 0,
   "include_hidden": false,
-  "exclude": ["vendor/generated", "cache"],
-  "max_bytes": 1048576
+  "exclude": ["node_modules", "_build", "dist", "build", "target"],
+  "max_bytes": 1048576,
+  "rule_pack": "data/team-rules.json"
 }
 ```
 
@@ -181,6 +223,50 @@ wasmtime run --dir ./data::data --dir ./output::output \
 
 When reporting policy-driven results, mention the policy path, preset or
 entity scope, skipped files, and output manifest.
+
+## Rule Packs
+
+Use `--rule-pack=guest-path` when the user supplies team-owned regex rules,
+literal denylists, or exact-match allowlists for workflow-specific leaks such
+as internal ticket IDs, customer aliases, partner identifiers, tenant IDs, or
+project names. Rule-pack matches can affect `analyze`, `anonymize`, `check`,
+`scan`, `scan --diff`, and `sanitize`, but they do not become public PII entity
+labels.
+
+```json
+{
+  "version": 1,
+  "rules": [
+    {
+      "id": "ticket",
+      "label": "INTERNAL_TICKET",
+      "pattern": "INC-[[:digit:]]{4,}",
+      "replacement": "<INTERNAL_TICKET>"
+    }
+  ],
+  "denylist": [
+    {
+      "id": "customer_name",
+      "label": "CUSTOMER_NAME",
+      "terms": ["Acme Internal"],
+      "replacement": "<CUSTOMER>"
+    }
+  ],
+  "allowlist": ["INC-0000", { "pattern": "INC-9999" }]
+}
+```
+
+Example:
+
+```sh
+wasmtime run --dir ./data::data --dir ./output::output \
+  "$wasm" scan data --preset=customer_support \
+  --rule-pack=data/team-rules.json --manifest=output/scan.json \
+  --format=json --report=safe
+```
+
+Safe reports omit raw custom matched text. Full reports may include it, so use
+`--report=full` only for explicit local debugging.
 
 ## Model-Backed Candidates
 
@@ -206,6 +292,7 @@ When summarizing results, include:
 - entity types and counts;
 - affected paths, output paths, and manifest paths;
 - skipped files, size limits, hidden-file handling, or model-backed scope;
+- diff-scan scope or custom rule-pack scope when either was used;
 - clear caveats for unsupported PII classes.
 
 Do not paste raw matched PII from full reports unless the user explicitly asks
@@ -222,4 +309,6 @@ for local debugging output and the response will remain local.
   when hidden files are in scope.
 - If reports are too broad, use a narrower preset, explicit `--entities`, or a
   higher `--min-score`.
+- `check`, `scan`, and `scan --diff` may exit nonzero when findings are
+  present. Read the JSON report before treating it as a tool failure.
 - If output may be pasted outside the local machine, use `--report=safe`.

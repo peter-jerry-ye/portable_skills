@@ -1,6 +1,6 @@
 ---
 name: pure-wasm-csv-skills
-description: Inspect, clean, validate, summarize, and visualize CSV/TSV/custom-delimited tables plus supported cached-value XLSX/XLSM/ODS sheets in a portable WASIp1 sandbox. Use when working with unfamiliar tabular files, spreadsheet intake, data-quality reports, cleaned derivative CSVs, schema checks, grouped summaries, crosstabs, workbook sheet export, or HTML chart/dashboard review without Python, pandas, LibreOffice, or native renderers.
+description: Inspect, clean, validate, summarize, and visualize CSV/TSV/custom-delimited tables plus supported cached-value XLSX/XLSM/ODS sheets, native XLSX tables, and cached workbook regions in a portable WASIp1 sandbox. Use when working with unfamiliar tabular files, spreadsheet intake, data-quality reports, cleaned derivative CSVs, schema checks, grouped summaries, crosstabs, workbook triage/export, or HTML chart/dashboard review without Python, pandas, LibreOffice, or native renderers.
 ---
 
 # Pure Wasm CSV Skills
@@ -32,8 +32,13 @@ preopen. There is no ambient filesystem access.
   `validate` on the cleaned output.
 - Reusable handoff: run `intake`; use `explore` for broad profiling and
   `audit` when cleaning changes matter.
-- Workbook intake: run `workbook sheets`, then export cached values with
-  `workbook export`, `xlsx`, or `ods`.
+- Workbook intake: run `workbook triage` when the right sheet, native XLSX
+  table, or cached region is unclear; use `workbook sheets`, `workbook tables`,
+  and `workbook regions` for inventory.
+- Workbook export: use `workbook export --recommended` after triage, or export
+  explicitly with `--sheet`, `--sheet-index`, `--table`, or `--region`.
+- Workbook as table input: run normal table commands directly with
+  `--recommended`, `--sheet`, `--sheet-index`, `--table`, or `--region`.
 - Visual review: run `viz` or `dashboard` only after confirming the relevant
   columns and data types.
 
@@ -63,9 +68,11 @@ wasmtime run "$wasm" help workbook
 
 ## Boundaries
 
-Workbook support is read-only cached-value intake/export. The skill does not
-recalculate formulas, execute macros, preserve styling, edit workbooks, render
-native charts, or provide spreadsheet display fidelity.
+Workbook support is read-only cached-value intake/export. `.xlsx`/`.xlsm`
+native table refs and cached regions are selectors for tabular values, not
+workbook rendering. The skill does not recalculate formulas, execute macros,
+preserve styling, edit workbooks, render native charts, or provide spreadsheet
+display fidelity. Legacy `.xls` workbooks are outside scope.
 
 HTML chart/dashboard output is a review artifact. Static PNG/PDF/SVG rendering
 and full native chart-renderer parity are outside this skill.

@@ -24,7 +24,8 @@ Use it for:
 - checking shape, columns, missing values, distributions, and correlations;
 - creating cleaned derivative CSV files without changing the original input;
 - generating profile, audit, intake, schema, and quality reports;
-- exporting supported cached-value workbook sheets to CSV;
+- triaging supported workbooks and exporting recommended sheets, native XLSX
+  tables, or cached regions to CSV;
 - producing reviewable HTML chart and dashboard artifacts.
 
 Start here when the user's file is a table or workbook-like artifact:
@@ -42,9 +43,10 @@ Use it for:
 
 - checking files before sharing them in chats, issues, PRs, or vendor handoffs;
 - scanning directory trees and writing safe manifests;
+- scanning staged or saved unified diffs for supported PII on added lines;
 - redacting logs, tickets, configs, JSON, CSV, Markdown, and text files;
 - applying repeatable PII policies for presets, entity labels, thresholds, and
-  file-tree rules;
+  file-tree rules, plus optional user-supplied rule packs;
 - optionally adding model-backed span candidates through the same `pii.wasm`
   entry point when the user supplies a local model bundle.
 

@@ -6,6 +6,8 @@ The CLI help remains the source of truth for exact flags:
 wasm=pure-wasm-csv-skills/assets/csv.wasm
 wasmtime run "$wasm" --help
 wasmtime run "$wasm" help profile
+wasmtime run "$wasm" help workbook
+wasmtime run "$wasm" help xlsx
 ```
 
 ## Runtime Pattern
@@ -129,18 +131,45 @@ manifest or report before summarizing the bundle.
 
 ## Workbook Cached-Value Intake
 
-Workbook handling is read-only cached-value intake/export:
+Workbook handling is read-only cached-value intake/export. Start with triage
+when the useful table is not obvious:
 
 ```sh
+wasmtime run --dir ./data::data --dir ./output::output "$wasm" workbook triage data/book.xlsx -f json -o output/triage.json
 wasmtime run --dir ./data::data --dir ./output::output "$wasm" workbook sheets data/book.xlsx -f json -o output/sheets.json
-wasmtime run --dir ./data::data --dir ./output::output "$wasm" workbook export data/book.xlsx --sheet Sheet1 -o output/sheet.csv
-wasmtime run --dir ./data::data --dir ./output::output "$wasm" xlsx data/book.xlsx --list-sheets -f csv -o output/sheets.csv
-wasmtime run --dir ./data::data --dir ./output::output "$wasm" ods data/book.ods --sheet-index 1 -o output/sheet.csv
+wasmtime run --dir ./data::data --dir ./output::output "$wasm" workbook tables data/book.xlsx -f csv -o output/tables.csv
+wasmtime run --dir ./data::data --dir ./output::output "$wasm" workbook regions data/book.xlsx -f json -o output/regions.json
+wasmtime run --dir ./data::data --dir ./output::output "$wasm" workbook export data/book.xlsx --recommended -o output/recommended.csv
 ```
 
-After export, run the normal CSV recipes on the exported file. Formulas are not
-recalculated, macros/scripts are not executed, styling is not preserved, and
-native workbook charts are not rendered.
+Use explicit selectors when the target is known:
+
+```sh
+wasmtime run --dir ./data::data --dir ./output::output "$wasm" workbook export data/book.xlsx --sheet Sheet1 -o output/sheet.csv
+wasmtime run --dir ./data::data --dir ./output::output "$wasm" workbook export data/book.xlsx --table SalesTable -o output/sales.csv
+wasmtime run --dir ./data::data --dir ./output::output "$wasm" workbook export data/book.xlsx --sheet-index 2 --region B4:F20 -o output/region.csv
+wasmtime run --dir ./data::data --dir ./output::output "$wasm" xlsx data/book.xlsx --list-tables -f json -o output/xlsx-tables.json
+wasmtime run --dir ./data::data --dir ./output::output "$wasm" ods data/book.ods --sheet-index 1 --region A1:D20 -o output/ods-region.csv
+```
+
+Many normal table commands can read supported workbook inputs directly. Use
+the same selector that triage or inventory identified:
+
+```sh
+wasmtime run --dir ./data::data --dir ./output::output "$wasm" profile data/book.xlsx --recommended -f json -o output/recommended-profile.json
+wasmtime run --dir ./data::data --dir ./output::output "$wasm" preview data/book.xlsx --table SalesTable -n 10 --columns 8 -f csv -o output/table-preview.csv
+wasmtime run --dir ./data::data --dir ./output::output "$wasm" schema infer data/book.xlsx --sheet-index 2 --region B4:F20 -f rules -o output/region-rules.json
+```
+
+Read `triage.json` for the recommended selector and reason. Native XLSX table
+selection follows saved table refs. Cached-region detection is a deterministic
+value-based aid; it does not use styling, merged-cell layout, hidden rows, or
+formula recalculation. After export, run normal CSV recipes on the exported
+file if a separate derivative CSV is easier to inspect.
+
+Formulas are not recalculated, macros/scripts are not executed, styling is not
+preserved, and native workbook charts are not rendered. Legacy `.xls` files are
+outside scope; use a CSV, `.xlsx`, or `.ods` export instead.
 
 ## Visual Review
 
@@ -177,7 +206,8 @@ or PDF export.
   behavior has varied across environments; use it only after local smoke
   testing confirms the exact artifact and directory mapping.
 - If a column is not found, run `columns` or standardize headers with `clean`.
-- If a workbook sheet is ambiguous, run `workbook sheets` and select by exact
-  sheet name or one-based `--sheet-index`.
+- If a workbook table is ambiguous, run `workbook triage`; then use
+  `--recommended` or choose an exact `--sheet`, one-based `--sheet-index`,
+  native XLSX `--table`, or cached `--region`.
 - If a chart is empty, inspect `missing`, `numeric`, and `categorical` outputs
   before changing the chart command.
