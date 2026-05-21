@@ -10,8 +10,6 @@ Try in this order:
 1. `wasmtime`
 2. `wasmedge`
 3. `iwasm`, only after `selftest` or `capabilities` succeeds
-4. `pywasm`, only as a slow last resort through `uv run --with pywasm` or an
-   already-approved Python environment with `pywasm`
 
 If none are available, stop and report that a compatible WASIp1 runtime is
 required. Do not replace the workflow with Python PII libraries, containers,
@@ -74,47 +72,22 @@ Some iwasm builds lack WebAssembly features used by an artifact. If `selftest`
 or `capabilities` fails, use Wasmtime or WasmEdge instead and report the
 runtime incompatibility.
 
-## pywasm Last Resort
+## Python-Hosted Runtime Experiments
 
-Use this only as a Python-hosted WASIp1 fallback. It still runs `pii.wasm`; it
-must not become Python PII detection. Expect it to be slower than native
-runtimes, and run `selftest` or `capabilities` first to check artifact
-compatibility.
+Do not use Python-hosted runtimes as normal fallbacks. They add a package
+supply-chain surface and weaken the portable-Wasm safety signal for this
+skill.
 
-Prefer `uv` for an ephemeral package environment:
-
-```sh
-uv run --with pywasm python portable-pii-wasm/scripts/run_pywasm.py \
-  portable-pii-wasm/assets/pii.wasm selftest --format=json
-uv run --with pywasm python portable-pii-wasm/scripts/run_pywasm.py \
-  --dir ./data::data --dir ./output::output \
-  portable-pii-wasm/assets/pii.wasm \
-  check data/ticket.txt --preset=customer_support \
-  --format=json --report=safe
-```
-
-If `pywasm` is already available in the selected Python environment:
-
-```sh
-python3 -c "import pywasm; print('pywasm ok')"
-python3 portable-pii-wasm/scripts/run_pywasm.py \
-  --dir ./data::data --dir ./output::output \
-  portable-pii-wasm/assets/pii.wasm \
-  check data/ticket.txt --preset=customer_support \
-  --format=json --report=safe
-```
-
-The runner accepts Wasmtime-style `--dir host::guest` mappings and translates
-them to pywasm's guest-to-host directory table internally. `check`, `scan`, and
-`scan --diff` may exit nonzero when findings are present; read the JSON output
-before treating that as a runtime failure.
-
-If package download is blocked by policy, network, or platform support, stop
-and ask the user to provide a compatible WASIp1 runtime or an approved Python
-environment with `pywasm`.
+If a user explicitly approves a local `pywasm` experiment, keep it external to
+the skill package. The experiment must still run `pii.wasm`, bind WASIp1
+preopens equivalent to the commands above, and pass `selftest` or
+`capabilities` before scanning user files. Do not generate or install a Python
+PII detector as a substitute. If the experiment fails, stop and ask for
+Wasmtime, WasmEdge, or a compatible iwasm build.
 
 ## Sources
 
 - Wasmtime CLI install: https://docs.wasmtime.dev/cli-install.html
 - WasmEdge install: https://wasmedge.org/docs/start/install/
-- pywasm package and API: https://pypi.org/project/pywasm/
+- pywasm package, for explicit troubleshooting experiments only:
+  https://pypi.org/project/pywasm/

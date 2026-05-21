@@ -31,8 +31,6 @@ Use runtimes in this order:
 2. `wasmedge`: `--dir data:./data`
 3. `iwasm`: `--map-dir=data::./data`, only after `iwasm ... "$wasm" --help`
    succeeds
-4. `pywasm`: run `scripts/run_pywasm.py` through `uv run --with pywasm`,
-   only as a slow last resort after a `--help` smoke check succeeds
 
 If none are available, stop and report that a compatible WASIp1 runtime is
 required. Do not substitute Python CSV parsing, pandas, LibreOffice,
