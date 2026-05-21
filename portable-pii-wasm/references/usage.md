@@ -1,8 +1,7 @@
 # PII Usage Reference
 
-Use this reference for concrete recipes after `portable-pii-wasm/SKILL.md` has
-selected the workflow. CLI usage text and `capabilities` output are the source
-of truth for exact flags, entity labels, presets, and experimental features:
+CLI usage text and `capabilities` output are the source of truth for exact
+flags, entity labels, presets, and experimental features:
 
 ```sh
 wasm=portable-pii-wasm/assets/pii.wasm

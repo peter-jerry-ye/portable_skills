@@ -55,9 +55,9 @@ They must not echo raw matched PII.
 
 ## References
 
-- [Usage reference](references/usage.md): task recipes, policy files, runtime
-  fallbacks, model-backed workflow setup, directory scanning, and
-  troubleshooting.
+- Read [Usage reference](references/usage.md) when a workflow needs concrete
+  command recipes, policy files, runtime fallbacks, model-backed setup,
+  directory scanning, or troubleshooting.
 
 ## Boundaries
 

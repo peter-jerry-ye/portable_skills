@@ -57,8 +57,9 @@ wasmtime run "$wasm" help workbook
 
 ## References
 
-- [Usage reference](references/usage.md): task recipes, output guidance,
-  runtime fallbacks, workbook handling, dashboard config, and troubleshooting.
+- Read [Usage reference](references/usage.md) when a workflow needs concrete
+  command recipes, output guidance, runtime fallbacks, workbook handling,
+  dashboard config, or troubleshooting.
 
 ## Boundaries
 

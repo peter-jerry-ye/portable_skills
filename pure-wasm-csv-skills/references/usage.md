@@ -1,8 +1,6 @@
 # CSV Usage Reference
 
-Use this reference for concrete recipes after `pure-wasm-csv-skills/SKILL.md`
-has selected the workflow. The CLI help remains the source of truth for exact
-flags:
+The CLI help remains the source of truth for exact flags:
 
 ```sh
 wasm=pure-wasm-csv-skills/assets/csv.wasm
