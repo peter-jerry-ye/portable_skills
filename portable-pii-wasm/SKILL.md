@@ -1,6 +1,6 @@
 ---
 name: portable-pii-wasm
-description: Detect, review, anonymize, and sanitize supported PII in local text files, directory trees, and unified diffs with a portable offline WASIp1 workflow. Use when checking files before sharing, creating safe reports, redacting logs/tickets/configs/JSON/CSV/Markdown/text, scanning directories or staged diffs for supported personal data or narrow secret formats, applying repeatable policies or rule packs, or using local model-backed span candidates without a Python PII runtime.
+description: Detect, review, anonymize, and sanitize supported PII in local text files, directory trees, and unified diffs with a portable offline WASIp1 workflow. Use when checking files before sharing, creating safe reports, redacting logs/tickets/configs/JSON/CSV/Markdown/text, scanning directories or staged diffs for supported personal data or narrow secret formats, applying repeatable policies or rule packs, or using local model-backed span candidates without Python PII libraries or network services.
 ---
 
 # Portable PII Wasm
@@ -34,6 +34,8 @@ Use runtimes in this order:
 2. `wasmedge`: `--dir data:./data`
 3. `iwasm`: `--map-dir=data::./data`, only after `selftest` or
    `capabilities` succeeds
+4. `pywasm`: run `scripts/run_pywasm.py` through `uv run --with pywasm`,
+   only as a slow last resort after `selftest` or `capabilities` succeeds
 
 If none are available, stop and report that a compatible WASIp1 runtime is
 required. Do not substitute Python PII libraries, containers, network PII
@@ -80,9 +82,9 @@ offer extra redaction or cleanup unless the user asked for it.
 
 ## References
 
-- Read [Usage reference](references/usage.md) when a workflow needs concrete
-  command recipes, policy files, runtime fallbacks, model-backed setup,
-  directory scanning, or troubleshooting.
+- Read [Usage reference](references/usage.md) for recipes, policy files,
+  model-backed setup, directory scanning, or troubleshooting.
+- Read [Runtime setup](references/runtime.md) when Wasmtime is missing.
 
 ## Boundaries
 

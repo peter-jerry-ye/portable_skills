@@ -32,10 +32,14 @@ Use a compatible WASIp1 runtime. Try runtimes in this order:
 1. `wasmtime`
 2. `wasmedge`
 3. `iwasm`
+4. `pywasm` through `uv run --with pywasm`, only as a slow last resort
 
 If none are available, stop and report that a WASIp1 runtime is required. Do
-not replace this workflow with Python, pandas, LibreOffice, shell CSV tools, or
-non-sandboxed parsing.
+not replace this workflow with Python CSV parsing, pandas, LibreOffice, shell
+CSV tools, or non-sandboxed parsing.
+
+See [Runtime setup](runtime.md) for install commands, runtime-specific
+directory mapping, and the `pywasm` runner.
 
 Equivalent profile commands:
 
@@ -52,6 +56,13 @@ wasmedge --dir data:./data --dir output:./output \
 iwasm --map-dir=data::./data --map-dir=output::./output \
   "$wasm" --help
 iwasm --map-dir=data::./data --map-dir=output::./output \
+  "$wasm" profile data/input.csv -f json -o output/profile.json
+
+# pywasm via uv: host::guest. Verify this slower fallback first.
+uv run --with pywasm python pure-wasm-csv-skills/scripts/run_pywasm.py \
+  "$wasm" --help
+uv run --with pywasm python pure-wasm-csv-skills/scripts/run_pywasm.py \
+  --dir ./data::data --dir ./output::output \
   "$wasm" profile data/input.csv -f json -o output/profile.json
 ```
 

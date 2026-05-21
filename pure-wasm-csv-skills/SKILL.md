@@ -1,6 +1,6 @@
 ---
 name: pure-wasm-csv-skills
-description: Inspect, clean, validate, summarize, and visualize CSV/TSV/custom-delimited tables plus supported cached-value XLSX/XLSM/ODS sheets, native XLSX tables, and cached workbook regions in a portable WASIp1 sandbox. Use when working with unfamiliar tabular files, spreadsheet intake, data-quality reports, cleaned derivative CSVs, schema checks, grouped summaries, crosstabs, workbook triage/export, or HTML chart/dashboard review without Python, pandas, LibreOffice, or native renderers.
+description: Inspect, clean, validate, summarize, and visualize CSV/TSV/custom-delimited tables plus supported cached-value XLSX/XLSM/ODS sheets, native XLSX tables, and cached workbook regions in a portable WASIp1 sandbox. Use when working with unfamiliar tabular files, spreadsheet intake, data-quality reports, cleaned derivative CSVs, schema checks, grouped summaries, crosstabs, workbook triage/export, or HTML chart/dashboard review without Python CSV parsing, pandas, LibreOffice, or native renderers.
 ---
 
 # Pure Wasm CSV Skills
@@ -31,10 +31,12 @@ Use runtimes in this order:
 2. `wasmedge`: `--dir data:./data`
 3. `iwasm`: `--map-dir=data::./data`, only after `iwasm ... "$wasm" --help`
    succeeds
+4. `pywasm`: run `scripts/run_pywasm.py` through `uv run --with pywasm`,
+   only as a slow last resort after a `--help` smoke check succeeds
 
 If none are available, stop and report that a compatible WASIp1 runtime is
-required. Do not substitute Python, pandas, LibreOffice, spreadsheet apps,
-shell CSV pipelines, containers, or non-sandboxed parsing.
+required. Do not substitute Python CSV parsing, pandas, LibreOffice,
+spreadsheet apps, shell CSV pipelines, containers, or non-sandboxed parsing.
 
 ## Workflow Routing
 
@@ -75,14 +77,16 @@ wasmtime run "$wasm" help workbook
 - Final summaries should include artifact paths, key counts or selector
   choices, scope limits, and caveats. Do not offer a follow-up cleanup unless
   the user asked for it.
-- Do not substitute Python, pandas, Plotly, LibreOffice, spreadsheet apps,
-  shell CSV pipelines, or native renderers for supported first-pass work.
+- Do not substitute Python CSV parsing, pandas, Plotly, LibreOffice,
+  spreadsheet apps, shell CSV pipelines, or native renderers for supported
+  first-pass work.
 
 ## References
 
 - Read [Usage reference](references/usage.md) when a workflow needs concrete
-  command recipes, output guidance, runtime fallbacks, workbook handling,
-  dashboard config, or troubleshooting.
+  command recipes, output guidance, workbook handling, dashboard config, or
+  troubleshooting.
+- Read [Runtime setup](references/runtime.md) when Wasmtime is missing.
 
 ## Boundaries
 
@@ -92,5 +96,4 @@ workbook rendering. The skill does not recalculate formulas, execute macros,
 preserve styling, edit workbooks, render native charts, or provide spreadsheet
 display fidelity. Legacy `.xls` workbooks are outside scope.
 
-HTML chart/dashboard output is a review artifact. Static PNG/PDF/SVG rendering
-and full native chart-renderer parity are outside this skill.
+HTML chart/dashboard output is a review artifact. Static PNG/PDF/SVG rendering and full native chart-renderer parity are outside this skill.
