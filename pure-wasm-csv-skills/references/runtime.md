@@ -10,8 +10,6 @@ Try in this order:
 1. `wasmtime`
 2. `wasmedge`
 3. `iwasm`, only after a simple artifact check succeeds
-4. `pywasm`, only as a slow last resort through `uv run --with pywasm` or an
-   already-approved Python environment with `pywasm`
 
 If none are available, stop and report that a compatible WASIp1 runtime is
 required. Do not replace the workflow with Python CSV parsing, pandas,
@@ -70,42 +68,22 @@ iwasm --map-dir=data::./data --map-dir=output::./output \
 Some iwasm builds lack WebAssembly features used by an artifact. If the check
 fails, use Wasmtime or WasmEdge instead and report the runtime incompatibility.
 
-## pywasm Last Resort
+## Python-Hosted Runtime Experiments
 
-Use this only as a Python-hosted WASIp1 fallback. It still runs `csv.wasm`; it
-must not become Python CSV parsing. Expect it to be slower than native
-runtimes, and run `--help` first to check artifact compatibility.
+Do not use Python-hosted runtimes as normal fallbacks. They add a package
+supply-chain surface and weaken the portable-Wasm safety signal for this
+skill.
 
-Prefer `uv` for an ephemeral package environment:
-
-```sh
-uv run --with pywasm python pure-wasm-csv-skills/scripts/run_pywasm.py \
-  pure-wasm-csv-skills/assets/csv.wasm --help
-uv run --with pywasm python pure-wasm-csv-skills/scripts/run_pywasm.py \
-  --dir ./data::data --dir ./output::output \
-  pure-wasm-csv-skills/assets/csv.wasm \
-  profile data/input.csv -f json -o output/profile.json
-```
-
-If `pywasm` is already available in the selected Python environment:
-
-```sh
-python3 -c "import pywasm; print('pywasm ok')"
-python3 pure-wasm-csv-skills/scripts/run_pywasm.py \
-  --dir ./data::data --dir ./output::output \
-  pure-wasm-csv-skills/assets/csv.wasm \
-  profile data/input.csv -f json -o output/profile.json
-```
-
-The runner accepts Wasmtime-style `--dir host::guest` mappings and translates
-them to pywasm's guest-to-host directory table internally.
-
-If package download is blocked by policy, network, or platform support, stop
-and ask the user to provide a compatible WASIp1 runtime or an approved Python
-environment with `pywasm`.
+If a user explicitly approves a local `pywasm` experiment, keep it external to
+the skill package. The experiment must still run `csv.wasm`, bind WASIp1
+preopens equivalent to the commands above, and pass `--help` before running a
+data workflow. Do not generate or install a Python CSV parser as a substitute.
+If the experiment fails, stop and ask for Wasmtime, WasmEdge, or a compatible
+iwasm build.
 
 ## Sources
 
 - Wasmtime CLI install: https://docs.wasmtime.dev/cli-install.html
 - WasmEdge install: https://wasmedge.org/docs/start/install/
-- pywasm package and API: https://pypi.org/project/pywasm/
+- pywasm package, for explicit troubleshooting experiments only:
+  https://pypi.org/project/pywasm/

@@ -33,14 +33,13 @@ Use a compatible WASIp1 runtime. Try runtimes in this order:
 1. `wasmtime`
 2. `wasmedge`
 3. `iwasm`
-4. `pywasm` through `uv run --with pywasm`, only as a slow last resort
 
 If none are available, stop and report that a WASIp1 runtime is required. Do
 not replace this workflow with Python PII libraries, containers, network PII
 services, shell parsing, or non-sandboxed file handling.
 
 See [Runtime setup](runtime.md) for install commands, runtime-specific
-directory mapping, and the `pywasm` runner.
+directory mapping, and troubleshooting notes.
 
 Equivalent safe-check commands:
 
@@ -59,14 +58,6 @@ wasmedge --dir data:./data --dir output:./output \
 iwasm --map-dir=data::./data --map-dir=output::./output \
   "$wasm" selftest --format=json
 iwasm --map-dir=data::./data --map-dir=output::./output \
-  "$wasm" check data/ticket.txt --preset=customer_support \
-  --format=json --report=safe
-
-# pywasm via uv: host::guest. Verify this slower fallback first.
-uv run --with pywasm python portable-pii-wasm/scripts/run_pywasm.py \
-  "$wasm" selftest --format=json
-uv run --with pywasm python portable-pii-wasm/scripts/run_pywasm.py \
-  --dir ./data::data --dir ./output::output \
   "$wasm" check data/ticket.txt --preset=customer_support \
   --format=json --report=safe
 ```

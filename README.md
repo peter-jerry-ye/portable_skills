@@ -82,7 +82,8 @@ Portable Skills are designed around explicit access:
 The examples use `wasmtime` because its `--dir host::guest` syntax makes
 preopens explicit. If `wasmtime` is unavailable, the skill references include
 install guidance plus tested fallback patterns for WasmEdge, conditional
-WAMR/iwasm use, and a slower `uv` + `pywasm` last resort.
+WAMR/iwasm use, and troubleshooting notes for Python-hosted runtime
+experiments.
 
 CSV example:
 
@@ -106,8 +107,7 @@ map them as `./data::data`, `./output::output`, and, when needed,
 Do not silently replace these workflows with Python CSV/PII libraries,
 LibreOffice, shell CSV pipelines, containers, network PII services, or
 non-sandboxed parsing when a runtime is missing. Install or select a compatible
-WASIp1 runtime first. The `pywasm` fallback still runs the bundled `.wasm`
-artifact; it is not Python CSV or PII processing.
+WASIp1 runtime first.
 
 ## Artifact Checks
 
