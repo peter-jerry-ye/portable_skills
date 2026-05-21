@@ -206,6 +206,8 @@ or PDF export.
   behavior has varied across environments; use it only after local smoke
   testing confirms the exact artifact and directory mapping.
 - If a column is not found, run `columns` or standardize headers with `clean`.
+- If command help prints `s4s-csv` or `s4s_csv`, read it as the upstream
+  shorthand for `skills_csv`; this package exposes the artifact as `csv.wasm`.
 - If a workbook table is ambiguous, run `workbook triage`; then use
   `--recommended` or choose an exact `--sheet`, one-based `--sheet-index`,
   native XLSX `--table`, or cached `--region`.
